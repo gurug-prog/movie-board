@@ -26,7 +26,7 @@ namespace MyConsoleProject
             command.Parameters.AddWithValue("$login", user.login);
             command.Parameters.AddWithValue("$password", user.password);
             command.Parameters.AddWithValue("$role", user.role);
-            command.Parameters.AddWithValue("$signUpDate", user.signUpDate.ToString());
+            command.Parameters.AddWithValue("$signUpDate", user.signUpDate.ToString("o"));
 
             var newId = Convert.ToInt32(command.ExecuteScalar());
             connection.Close();
@@ -71,7 +71,7 @@ namespace MyConsoleProject
             command.Parameters.AddWithValue("$login", user.login);
             command.Parameters.AddWithValue("$password", user.password);
             command.Parameters.AddWithValue("$role", user.role);
-            command.Parameters.AddWithValue("$signUpDate", user.signUpDate.ToString());
+            command.Parameters.AddWithValue("$signUpDate", user.signUpDate.ToString("o"));
 
             var nChanged = command.ExecuteNonQuery();
             connection.Close();

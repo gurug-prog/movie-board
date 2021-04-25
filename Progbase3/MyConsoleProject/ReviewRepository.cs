@@ -26,7 +26,7 @@ namespace MyConsoleProject
             command.Parameters.AddWithValue("$header", review.header);
             command.Parameters.AddWithValue("$overview", review.overview);
             command.Parameters.AddWithValue("$rating", review.rating);
-            command.Parameters.AddWithValue("$lastEdited", review.lastEdited.ToString());
+            command.Parameters.AddWithValue("$lastEdited", review.lastEdited.ToString("o"));
 
             var newId = Convert.ToInt32(command.ExecuteScalar());
             connection.Close();
@@ -71,7 +71,7 @@ namespace MyConsoleProject
             command.Parameters.AddWithValue("$header", review.header);
             command.Parameters.AddWithValue("$overview", review.overview);
             command.Parameters.AddWithValue("$rating", review.rating);
-            command.Parameters.AddWithValue("$lastEdited", review.lastEdited.ToString());
+            command.Parameters.AddWithValue("$lastEdited", review.lastEdited.ToString("o"));
 
             var nChanged = command.ExecuteNonQuery();
             connection.Close();
