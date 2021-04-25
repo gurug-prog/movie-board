@@ -5,10 +5,10 @@ namespace MyConsoleProject
 {
     public class User
     {
-        private int id;
-        private string login; // textFile with logins
-        private string password; // random string (generator method)
-        private string role; // moderator or author or admin
-        private DateTime registrationDate; // DateTime.Now
+        public int id;
+        public string login; // textFile with logins
+        public string password; // random string (generator method)
+        public string role; // moderator or author or admin
+        public DateTime signUpDate; // DateTime.Now
     }
 }
