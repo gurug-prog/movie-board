@@ -1,6 +1,7 @@
 using System;
 using Microsoft.Data.Sqlite;
 using System.Collections.Generic;
+using System.IO;
 
 namespace MyConsoleProject
 {
@@ -49,6 +50,22 @@ namespace MyConsoleProject
             return dt;
         }
 
+        static TimeSpan GenerateDuration(TimeSpan minDuration, TimeSpan maxDuration)
+        {
+            var rand = new Random();
+            var hours = rand.Next(minDuration.Hours, maxDuration.Hours + 1);
+            
+            var minMinutes = Math.Min(minDuration.Minutes, maxDuration.Minutes);
+            var maxMinutes = minMinutes == minDuration.Minutes ? maxDuration.Minutes : minDuration.Minutes;
+            var minutes = rand.Next(minMinutes, maxMinutes + 1);
+            
+            var minSeconds = Math.Min(minDuration.Seconds, maxDuration.Seconds);
+            var maxSeconds = minSeconds == minDuration.Seconds ? maxDuration.Seconds : minDuration.Seconds;
+            var seconds = rand.Next(minSeconds, maxSeconds + 1);
+
+            return new TimeSpan(hours, minutes, seconds);
+        }
+
         static List<User> GenerateUsers(int usersQuantity, DateTime startDate, DateTime endDate)
         {
             var users = new List<User>();
@@ -65,6 +82,29 @@ namespace MyConsoleProject
                 users.Add(user);
             }
             return users;
+        }
+
+        static List<Film> GenerateFilms(int filmsQuantity, int startYear,
+            int endYear, TimeSpan minDuration, TimeSpan maxDuration)
+        {
+            var films = new List<Film>();
+            var rand = new Random();
+            var filmsFilePath = "../../data/generator/films.csv";
+            var filmsLines = File.ReadAllLines(filmsFilePath);
+            for (int i = 0; i < filmsQuantity; i++)
+            {
+                var filmsValues = filmsLines[i % filmsLines.Length].Split(',');
+
+                var title = filmsValues[1];
+                var director = filmsValues[2];
+                var country = filmsValues[3];
+                var releaseYear = rand.Next(startYear, endYear + 1);
+                var duration = GenerateDuration(minDuration, maxDuration);
+
+                var film = new Film(title, releaseYear, director, country, duration);
+                films.Add(film);
+            }
+            return films;
         }
 
         static void ProcessWriteUsers(string[] args, int entitiesQuantity, SqliteConnection connection)
@@ -85,7 +125,7 @@ namespace MyConsoleProject
             DateTime startDate, endDate;
             var startDateIsNotCorrect = !DateTime.TryParse(dateBoundsValues[0], out startDate);
             var endDateIsNotCorrect = !DateTime.TryParse(dateBoundsValues[1], out endDate);
-            if (startDateIsNotCorrect || endDateIsNotCorrect)
+            if (startDateIsNotCorrect || endDateIsNotCorrect || startDate > endDate)
             {
                 Console.WriteLine("Dates that you have entered are not correct.");
                 return;
@@ -95,12 +135,64 @@ namespace MyConsoleProject
             var userRepo = new UserRepository(connection);
             foreach (var user in users)
             {
-                Console.WriteLine(userRepo.Insert(user));
+                userRepo.Insert(user);
+            }
+        }
+
+        static void ProcessWriteFilms(string[] args, int entitiesQuantity, SqliteConnection connection)
+        {
+            if (args.Length != 4)
+            {
+                Console.WriteLine("You have entered more than needed arguments.");
+                return;
+            }
+            var yearsInterval = args[2];
+            var yearsBoundsValues = yearsInterval.Split('-');
+            if (yearsBoundsValues.Length != 2)
+            {
+                Console.WriteLine("You have entered wrong years interval.");
+                return;
+            }
+
+            int startYear, endYear;
+            var minYearIsNotCorrect = !int.TryParse(yearsBoundsValues[0], out startYear) || startYear < 0;
+            var maxYearIsNotCorrect = !int.TryParse(yearsBoundsValues[1], out endYear) || endYear < 0;
+            if (minYearIsNotCorrect || maxYearIsNotCorrect || startYear > endYear)
+            {
+                Console.WriteLine("Years must be non-negative integer numbers,");
+                Console.WriteLine("such that startYear <= endYear.");
+                return;
+            }
+
+            var durationInterval = args[3];
+            var durationBoundsValues = durationInterval.Split('-');
+            if (durationBoundsValues.Length != 2)
+            {
+                Console.WriteLine("You have entered wrong durations interval.");
+                return;
+            }
+
+            TimeSpan minDuration, maxDuration;
+            var minDurationIsNotCorrect = !TimeSpan.TryParse(durationBoundsValues[0], out minDuration);
+            var maxDurationIsNotCorrect = !TimeSpan.TryParse(durationBoundsValues[1], out maxDuration);
+            if (minDurationIsNotCorrect || maxDurationIsNotCorrect || minDuration > maxDuration)
+            {
+                Console.WriteLine("Durations that you have entered are not correct.");
+                return;
+            }
+
+            var films = GenerateFilms(entitiesQuantity, startYear,
+                endYear, minDuration, maxDuration);
+            var filmRepo = new FilmRepository(connection);
+            foreach (var film in films)
+            {
+                Console.WriteLine(filmRepo.Insert(film));
             }
         }
 
         static void Main(string[] args)
         {
+            // args = new string[] { "", "", "", "" };
             if (args.Length == 0)
             {
                 Console.WriteLine("Hello World!");
@@ -132,17 +224,17 @@ namespace MyConsoleProject
             {
                 ProcessWriteUsers(args, entitiesQuantity, connection);
             }
-            // else if (args[0] == "film")
-            // {
-            //     ProcessGenerateFilms(args);
-            // }
+            else if (args[0] == "film")
+            {
+                ProcessWriteFilms(args, entitiesQuantity, connection);
+            }
             // else if (args[0] == "actor")
             // {
-            //     ProcessGenerateActors(args);
+            //     ProcessWriteActors(args, entitiesQuantity, connection);
             // }
             // else if (args[0] == "review")
             // {
-            //     ProcessGenerateReviews(args);
+            //     ProcessWriteReviews(args, entitiesQuantity, connection);
             // }
             else
             {
