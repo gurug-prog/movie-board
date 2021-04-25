@@ -11,13 +11,22 @@ namespace MyConsoleProject
         public int releaseYear;
         public TimeSpan duration;
 
-        // public Film(string title, int releaseYear, string director, string country, TimeSpan duration)
-        // {
-        //     this.title = title;
-        //     this.releaseYear = releaseYear;
-        //     this.director = director;
-        //     this.country = country;
-        //     this.duration = duration;
-        // }
+        public Film()
+        {
+            title = "";
+            director = "";
+            country = "";
+            releaseYear = 1900;
+            duration = new TimeSpan();
+        }
+
+        public Film(string title, int releaseYear, string director, string country, TimeSpan duration)
+        {
+            this.title = title;
+            this.releaseYear = releaseYear;
+            this.director = director;
+            this.country = country;
+            this.duration = duration;
+        }
     }
 }

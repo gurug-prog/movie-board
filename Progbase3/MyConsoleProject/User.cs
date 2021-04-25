@@ -10,5 +10,23 @@ namespace MyConsoleProject
         public string password; // random string (generator method)
         public string role; // moderator or author or admin
         public DateTime signUpDate; // DateTime.Now
+
+        public User()
+        {
+            id = 0;
+            login = "";
+            password = "";
+            role = "";
+            signUpDate = new DateTime();
+        }
+
+        public User(int id, string login, string password, string role, DateTime signUpDate)
+        {
+            this.id = id;
+            this.login = login;
+            this.password = password;
+            this.role = role;
+            this.signUpDate = signUpDate;
+        }
     }
 }
