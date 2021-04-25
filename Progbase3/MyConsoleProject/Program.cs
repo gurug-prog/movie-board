@@ -70,12 +70,12 @@ namespace MyConsoleProject
         {
             var users = new List<User>();
             var rand = new Random();
+            var roles = new string[] { "moderator", "author" };
 
             for (int i = 0; i < usersQuantity; i++)
             {
                 var login = GenerateLogin();
                 var password = GeneratePassword();
-                var roles = new string[] { "moderator", "author" };
                 var role = roles[rand.Next(0, 2)];
                 var signUpDate = GenerateDate(startDate, endDate);
 
@@ -115,11 +115,11 @@ namespace MyConsoleProject
             var rand = new Random();
             var actorsFilePath = "../../data/generator/actors.csv";
             var actorsLines = File.ReadAllLines(actorsFilePath);
+            var rolePlans = new string[]{ "leading", "supporting", "extra" };
 
             for (int i = 0; i < actorsQuantity; i++)
             {
                 var actorsValues = actorsLines[i % actorsLines.Length].Split(',');
-                var rolePlans = new string[]{"leading", "supporting", "extra"};
 
                 var fullName = actorsValues[1] + " " + actorsValues[2];
                 var age = rand.Next(minAge, maxAge + 1);
@@ -232,7 +232,7 @@ namespace MyConsoleProject
             var filmRepo = new FilmRepository(connection);
             foreach (var film in films)
             {
-                Console.WriteLine(filmRepo.Insert(film));
+                filmRepo.Insert(film);
             }
         }
 
@@ -265,7 +265,7 @@ namespace MyConsoleProject
             var actorRepo = new ActorRepository(connection);
             foreach (var actor in actors)
             {
-                Console.WriteLine(actorRepo.Insert(actor));
+                actorRepo.Insert(actor);
             }
         }
 
@@ -297,7 +297,7 @@ namespace MyConsoleProject
             var reviewRepo = new ReviewRepository(connection);
             foreach (var review in reviews)
             {
-                Console.WriteLine(reviewRepo.Insert(review));
+                reviewRepo.Insert(review);
             }
         }
 
