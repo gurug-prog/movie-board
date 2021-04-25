@@ -3,9 +3,9 @@ namespace MyConsoleProject
     public class Actor
     {
         public int id;
-        public string fullName; // textFile
-        public int age; // int in range 15 - 80
-        public string rolePlan; // leading, supporting, extra
+        public string fullName;
+        public int age;
+        public string rolePlan;
 
         public Actor()
         {
@@ -15,7 +15,7 @@ namespace MyConsoleProject
             rolePlan = "";
         }
 
-        public Actor(string fullName, byte age, string rolePlan)
+        public Actor(string fullName, int age, string rolePlan)
         {
             this.fullName = fullName;
             this.age = age;

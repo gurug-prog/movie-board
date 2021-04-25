@@ -70,6 +70,7 @@ namespace MyConsoleProject
         {
             var users = new List<User>();
             var rand = new Random();
+
             for (int i = 0; i < usersQuantity; i++)
             {
                 var login = GenerateLogin();
@@ -91,6 +92,7 @@ namespace MyConsoleProject
             var rand = new Random();
             var filmsFilePath = "../../data/generator/films.csv";
             var filmsLines = File.ReadAllLines(filmsFilePath);
+
             for (int i = 0; i < filmsQuantity; i++)
             {
                 var filmsValues = filmsLines[i % filmsLines.Length].Split(',');
@@ -105,6 +107,28 @@ namespace MyConsoleProject
                 films.Add(film);
             }
             return films;
+        }
+
+        static List<Actor> GenerateActors(int actorsQuantity, int minAge, int maxAge)
+        {
+            var actors = new List<Actor>();
+            var rand = new Random();
+            var actorsFilePath = "../../data/generator/actors.csv";
+            var actorsLines = File.ReadAllLines(actorsFilePath);
+
+            for (int i = 0; i < actorsQuantity; i++)
+            {
+                var actorsValues = actorsLines[i % actorsLines.Length].Split(',');
+                var rolePlans = new string[]{"leading", "supporting", "extra"};
+
+                var fullName = actorsValues[1] + " " + actorsValues[2];
+                var age = rand.Next(minAge, maxAge + 1);
+                var rolePlan = rolePlans[rand.Next(0, 2)];
+
+                var actor = new Actor(fullName, age, rolePlan);
+                actors.Add(actor);
+            }
+            return actors;
         }
 
         static void ProcessWriteUsers(string[] args, int entitiesQuantity, SqliteConnection connection)
@@ -155,9 +179,9 @@ namespace MyConsoleProject
             }
 
             int startYear, endYear;
-            var minYearIsNotCorrect = !int.TryParse(yearsBoundsValues[0], out startYear) || startYear < 0;
-            var maxYearIsNotCorrect = !int.TryParse(yearsBoundsValues[1], out endYear) || endYear < 0;
-            if (minYearIsNotCorrect || maxYearIsNotCorrect || startYear > endYear)
+            var startYearIsNotCorrect = !int.TryParse(yearsBoundsValues[0], out startYear) || startYear < 0;
+            var endYearIsNotCorrect = !int.TryParse(yearsBoundsValues[1], out endYear) || endYear < 0;
+            if (startYearIsNotCorrect || endYearIsNotCorrect || startYear > endYear)
             {
                 Console.WriteLine("Years must be non-negative integer numbers,");
                 Console.WriteLine("such that startYear <= endYear.");
@@ -190,9 +214,46 @@ namespace MyConsoleProject
             }
         }
 
+        static void ProcessWriteActors(string[] args, int entitiesQuantity, SqliteConnection connection)
+        {
+            if (args.Length != 3)
+            {
+                Console.WriteLine("You have entered more than needed arguments.");
+                return;
+            }
+            var agesInterval = args[2];
+            var agesBoundsValues = agesInterval.Split('-');
+            if (agesBoundsValues.Length != 2)
+            {
+                Console.WriteLine("You have entered wrong ages interval.");
+                return;
+            }
+
+            int minAge, maxAge;
+            var minAgeIsNotCorrect = !int.TryParse(agesBoundsValues[0], out minAge) || minAge < 0;
+            var maxAgeIsNotCorrect = !int.TryParse(agesBoundsValues[1], out maxAge) || maxAge < 0;
+            if (minAgeIsNotCorrect || maxAgeIsNotCorrect || minAge > maxAge)
+            {
+                Console.WriteLine("Ages must be non-negative integer numbers,");
+                Console.WriteLine("such that minAge <= maxAge.");
+                return;
+            }
+
+            var actors = GenerateActors(entitiesQuantity, minAge, maxAge);
+            var actorRepo = new ActorRepository(connection);
+            foreach (var actor in actors)
+            {
+                Console.WriteLine(actorRepo.Insert(actor));
+            }
+        }
+
         static void Main(string[] args)
         {
             // args = new string[] { "", "", "", "" };
+            var databaseFilePath = "../../data/database.db";
+            SqliteConnection connection = new SqliteConnection($"Data Source={databaseFilePath}");
+
+            // this conditional needed when user don't wanna generate entities
             if (args.Length == 0)
             {
                 Console.WriteLine("Hello World!");
@@ -212,13 +273,6 @@ namespace MyConsoleProject
                 Console.WriteLine("Quantity of entities must be positive integer number.");
                 return;
             }
-            // else if (quantityOfLines > 10000)
-            // {
-            //     Console.WriteLine("Cannot generate more 10000 entities");
-            //     return;
-            // }
-            var databaseFilePath = "../../data/database.db";
-            SqliteConnection connection = new SqliteConnection($"Data Source={databaseFilePath}");
 
             if (args[0] == "user")
             {
@@ -228,10 +282,10 @@ namespace MyConsoleProject
             {
                 ProcessWriteFilms(args, entitiesQuantity, connection);
             }
-            // else if (args[0] == "actor")
-            // {
-            //     ProcessWriteActors(args, entitiesQuantity, connection);
-            // }
+            else if (args[0] == "actor")
+            {
+                ProcessWriteActors(args, entitiesQuantity, connection);
+            }
             // else if (args[0] == "review")
             // {
             //     ProcessWriteReviews(args, entitiesQuantity, connection);
