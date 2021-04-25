@@ -131,6 +131,28 @@ namespace MyConsoleProject
             return actors;
         }
 
+        static List<Review> GenerateReviews(int reviewsQuantity, DateTime startDate, DateTime endDate)
+        {
+            var reviews = new List<Review>();
+            var rand = new Random();
+            var headersFilePath = "../../data/generator/review_headers.txt";
+            var overviewsFilePath = "../../data/generator/review_overviews.txt";
+            var headers = File.ReadAllLines(headersFilePath);
+            var overviews = File.ReadAllLines(overviewsFilePath);
+
+            for (int i = 0; i < reviewsQuantity; i++)
+            {
+                var header = headers[i % headers.Length];
+                var overview = overviews[i % overviews.Length];
+                var rating = rand.Next(1, 11);
+                var lastEdited = GenerateDate(startDate, endDate);
+
+                var review = new Review(header, overview, rating, lastEdited);
+                reviews.Add(review);
+            }
+            return reviews;
+        }
+
         static void ProcessWriteUsers(string[] args, int entitiesQuantity, SqliteConnection connection)
         {
             if (args.Length != 3)
@@ -247,6 +269,38 @@ namespace MyConsoleProject
             }
         }
 
+        static void ProcessWriteReviews(string[] args, int entitiesQuantity, SqliteConnection connection)
+        {
+            if (args.Length != 3)
+            {
+                Console.WriteLine("You have entered more than needed arguments.");
+                return;
+            }
+            var dateIntervalString = args[2];
+            var dateBoundsValues = dateIntervalString.Split('-');
+            if (dateBoundsValues.Length != 2)
+            {
+                Console.WriteLine("You have entered wrong date interval.");
+                return;
+            }
+
+            DateTime startDate, endDate;
+            var startDateIsNotCorrect = !DateTime.TryParse(dateBoundsValues[0], out startDate);
+            var endDateIsNotCorrect = !DateTime.TryParse(dateBoundsValues[1], out endDate);
+            if (startDateIsNotCorrect || endDateIsNotCorrect || startDate > endDate)
+            {
+                Console.WriteLine("Dates that you have entered are not correct.");
+                return;
+            }
+
+            var reviews = GenerateReviews(entitiesQuantity, startDate, endDate);
+            var reviewRepo = new ReviewRepository(connection);
+            foreach (var review in reviews)
+            {
+                Console.WriteLine(reviewRepo.Insert(review));
+            }
+        }
+
         static void Main(string[] args)
         {
             // args = new string[] { "", "", "", "" };
@@ -286,10 +340,10 @@ namespace MyConsoleProject
             {
                 ProcessWriteActors(args, entitiesQuantity, connection);
             }
-            // else if (args[0] == "review")
-            // {
-            //     ProcessWriteReviews(args, entitiesQuantity, connection);
-            // }
+            else if (args[0] == "review")
+            {
+                ProcessWriteReviews(args, entitiesQuantity, connection);
+            }
             else
             {
                 Console.WriteLine($"Unknown entity: {args[0]}");
