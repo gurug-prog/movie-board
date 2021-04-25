@@ -20,9 +20,8 @@ namespace MyConsoleProject
             signUpDate = new DateTime();
         }
 
-        public User(int id, string login, string password, string role, DateTime signUpDate)
+        public User(string login, string password, string role, DateTime signUpDate)
         {
-            this.id = id;
             this.login = login;
             this.password = password;
             this.role = role;

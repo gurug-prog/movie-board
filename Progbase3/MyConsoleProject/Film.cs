@@ -13,6 +13,7 @@ namespace MyConsoleProject
 
         public Film()
         {
+            id = 0;
             title = "";
             director = "";
             country = "";

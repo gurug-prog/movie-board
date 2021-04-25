@@ -15,9 +15,8 @@ namespace MyConsoleProject
             rolePlan = "";
         }
 
-        public Actor(int id, string fullName, byte age, string rolePlan)
+        public Actor(string fullName, byte age, string rolePlan)
         {
-            this.id = id;
             this.fullName = fullName;
             this.age = age;
             this.rolePlan = rolePlan;

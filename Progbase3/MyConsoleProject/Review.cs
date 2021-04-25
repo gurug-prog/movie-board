@@ -20,9 +20,8 @@ namespace MyConsoleProject
             lastEdited = new DateTime();
         }
 
-        public Review(int id, string header, string overview, int rating, DateTime lastEdited)
+        public Review(string header, string overview, int rating, DateTime lastEdited)
         {
-            this.id = id;
             this.header = header;
             this.overview = overview;
             this.rating = rating;
