@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+
 namespace MyConsoleProject
 {
     public class Actor
@@ -6,6 +9,7 @@ namespace MyConsoleProject
         public string fullName;
         public int age;
         public string rolePlan;
+        public List<Film> films;
 
         public Actor()
         {

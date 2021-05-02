@@ -10,6 +10,8 @@ namespace MyConsoleProject
         public int rating; // in range from 1 to 10 (round to first digit after comma) ??????
                            // or ban to input user non-one afretcomma digit
         public DateTime lastEdited; // DateTime.Now
+        public Film film;
+        public User author;
 
         public Review()
         {

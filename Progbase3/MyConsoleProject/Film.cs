@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace MyConsoleProject
 {
@@ -10,6 +11,8 @@ namespace MyConsoleProject
         public string country;
         public int releaseYear;
         public TimeSpan duration;
+        public List<Review> reviews;
+        public List<Actor> cast;
 
         public Film()
         {

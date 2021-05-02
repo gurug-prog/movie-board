@@ -10,6 +10,7 @@ namespace MyConsoleProject
         public string password; // random string (generator method)
         public string role; // moderator or author or admin
         public DateTime signUpDate; // DateTime.Now
+        public List<Review> reviews;
 
         public User()
         {
