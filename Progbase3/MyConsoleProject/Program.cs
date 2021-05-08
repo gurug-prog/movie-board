@@ -1,171 +1,43 @@
 using System;
 using Microsoft.Data.Sqlite;
-using System.Collections.Generic;
-using System.IO;
+// using System.Collections.Generic;
+// using System.IO;
 
 namespace MyConsoleProject
 {
     class Program
     {
-        static string GenerateLogin()
+        static int[] ValidateYears(string[] args)
         {
-            char symbol;
-            var login = "";
-            var rand = new Random();
-            for (int i = 0; i < rand.Next(3, 20); i++)
+            var yearsInterval = args[2];
+            var yearsBoundsValues = yearsInterval.Split('-');
+            if (yearsBoundsValues.Length != 2)
             {
-                symbol = (char)rand.Next(97, 123);
-                login += symbol;
+                Console.Error.WriteLine("You have entered wrong years interval.");
+                return null;
             }
-            for (int i = 0; i < rand.Next(0, 5); i++)
+
+            int startYear, endYear;
+            var startYearIsNotCorrect = !int.TryParse(yearsBoundsValues[0], out startYear) || startYear < 0;
+            var endYearIsNotCorrect = !int.TryParse(yearsBoundsValues[1], out endYear) || endYear < 0;
+            if (startYearIsNotCorrect || endYearIsNotCorrect || startYear > endYear)
             {
-                symbol = (char)rand.Next(48, 58);
-                login += symbol;
+                Console.Error.WriteLine("Years must be non-negative integer numbers,");
+                Console.Error.WriteLine("such that startYear <= endYear.");
+                return null;
             }
-            return login;
+
+            return new int[] { startYear, endYear };
         }
 
-        static string GeneratePassword()
+        static DateTime[] ValidateDates(string[] args)
         {
-            char symbol;
-            var password = "";
-            var rand = new Random();
-            for (int i = 0; i < rand.Next(8, 15); i++)
-            {
-                symbol = (char)rand.Next(33, 127);
-                password += symbol.ToString();
-            }
-            return password;
-        }
-
-        static DateTime GenerateDate(DateTime startDate, DateTime endDate)
-        {
-            var rand = new Random();
-            var dateInterval = endDate - startDate;
-            var hours = rand.Next(0, 24);
-            var minutes = rand.Next(0, 60);
-            var seconds = rand.Next(0, 60);
-            var value = rand.Next(dateInterval.Days);
-            var dt = startDate.AddDays(value).AddHours(hours).AddMinutes(minutes).AddSeconds(seconds);
-            return dt;
-        }
-
-        static TimeSpan GenerateDuration(TimeSpan minDuration, TimeSpan maxDuration)
-        {
-            var rand = new Random();
-            var hours = rand.Next(minDuration.Hours, maxDuration.Hours + 1);
-            
-            var minMinutes = Math.Min(minDuration.Minutes, maxDuration.Minutes);
-            var maxMinutes = minMinutes == minDuration.Minutes ? maxDuration.Minutes : minDuration.Minutes;
-            var minutes = rand.Next(minMinutes, maxMinutes + 1);
-            
-            var minSeconds = Math.Min(minDuration.Seconds, maxDuration.Seconds);
-            var maxSeconds = minSeconds == minDuration.Seconds ? maxDuration.Seconds : minDuration.Seconds;
-            var seconds = rand.Next(minSeconds, maxSeconds + 1);
-
-            return new TimeSpan(hours, minutes, seconds);
-        }
-
-        static List<User> GenerateUsers(int usersQuantity, DateTime startDate, DateTime endDate)
-        {
-            var users = new List<User>();
-            var rand = new Random();
-            var roles = new string[] { "moderator", "author" };
-
-            for (int i = 0; i < usersQuantity; i++)
-            {
-                var login = GenerateLogin();
-                var password = GeneratePassword();
-                var role = roles[rand.Next(0, 2)];
-                var signUpDate = GenerateDate(startDate, endDate);
-
-                var user = new User(login, password, role, signUpDate);
-                users.Add(user);
-            }
-            return users;
-        }
-
-        static List<Film> GenerateFilms(int filmsQuantity, int startYear,
-            int endYear, TimeSpan minDuration, TimeSpan maxDuration)
-        {
-            var films = new List<Film>();
-            var rand = new Random();
-            var filmsFilePath = "../../data/generator/films.csv";
-            var filmsLines = File.ReadAllLines(filmsFilePath);
-
-            for (int i = 0; i < filmsQuantity; i++)
-            {
-                var filmsValues = filmsLines[i % filmsLines.Length].Split(',');
-
-                var title = filmsValues[1];
-                var director = filmsValues[2];
-                var country = filmsValues[3];
-                var releaseYear = rand.Next(startYear, endYear + 1);
-                var duration = GenerateDuration(minDuration, maxDuration);
-
-                var film = new Film(title, releaseYear, director, country, duration);
-                films.Add(film);
-            }
-            return films;
-        }
-
-        static List<Actor> GenerateActors(int actorsQuantity, int minAge, int maxAge)
-        {
-            var actors = new List<Actor>();
-            var rand = new Random();
-            var actorsFilePath = "../../data/generator/actors.csv";
-            var actorsLines = File.ReadAllLines(actorsFilePath);
-            var rolePlans = new string[]{ "leading", "supporting", "extra" };
-
-            for (int i = 0; i < actorsQuantity; i++)
-            {
-                var actorsValues = actorsLines[i % actorsLines.Length].Split(',');
-
-                var fullName = actorsValues[1] + " " + actorsValues[2];
-                var age = rand.Next(minAge, maxAge + 1);
-                var rolePlan = rolePlans[rand.Next(0, 2)];
-
-                var actor = new Actor(fullName, age, rolePlan);
-                actors.Add(actor);
-            }
-            return actors;
-        }
-
-        static List<Review> GenerateReviews(int reviewsQuantity, DateTime startDate, DateTime endDate)
-        {
-            var reviews = new List<Review>();
-            var rand = new Random();
-            var headersFilePath = "../../data/generator/review_headers.txt";
-            var overviewsFilePath = "../../data/generator/review_overviews.txt";
-            var headers = File.ReadAllLines(headersFilePath);
-            var overviews = File.ReadAllLines(overviewsFilePath);
-
-            for (int i = 0; i < reviewsQuantity; i++)
-            {
-                var header = headers[i % headers.Length];
-                var overview = overviews[i % overviews.Length];
-                var rating = rand.Next(1, 11);
-                var lastEdited = GenerateDate(startDate, endDate);
-
-                var review = new Review(header, overview, rating, lastEdited);
-                reviews.Add(review);
-            }
-            return reviews;
-        }
-
-        static void ProcessWriteUsers(string[] args, int entitiesQuantity, SqliteConnection connection)
-        {
-            if (args.Length != 3)
-            {
-                Console.WriteLine("You have entered more than needed arguments.");
-                return;
-            }
             var dateIntervalString = args[2];
             var dateBoundsValues = dateIntervalString.Split('-');
             if (dateBoundsValues.Length != 2)
             {
-                Console.WriteLine("You have entered wrong date interval.");
-                return;
+                Console.Error.WriteLine("You have entered wrong date interval.");
+                return null;
             }
 
             DateTime startDate, endDate;
@@ -173,11 +45,112 @@ namespace MyConsoleProject
             var endDateIsNotCorrect = !DateTime.TryParse(dateBoundsValues[1], out endDate);
             if (startDateIsNotCorrect || endDateIsNotCorrect || startDate > endDate)
             {
-                Console.WriteLine("Dates that you have entered are not correct.");
-                return;
+                Console.Error.WriteLine("Dates that you have entered are not correct.");
+                return null;
             }
 
-            var users = GenerateUsers(entitiesQuantity, startDate, endDate);
+            return new DateTime[] { startDate, endDate };
+        }
+
+        static TimeSpan[] ValidateDurations(string[] args)
+        {
+            var durationInterval = args[3];
+            var durationBoundsValues = durationInterval.Split('-');
+            if (durationBoundsValues.Length != 2)
+            {
+                Console.Error.WriteLine("You have entered wrong durations interval.");
+                return null;
+            }
+
+            TimeSpan minDuration, maxDuration;
+            var minDurationIsNotCorrect = !TimeSpan.TryParse(durationBoundsValues[0], out minDuration);
+            var maxDurationIsNotCorrect = !TimeSpan.TryParse(durationBoundsValues[1], out maxDuration);
+            if (minDurationIsNotCorrect || maxDurationIsNotCorrect || minDuration > maxDuration)
+            {
+                Console.Error.WriteLine("Durations that you have entered are not correct.");
+                return null;
+            }
+
+            return new TimeSpan[] { minDuration, maxDuration };
+        }
+
+        static int[] ValidateAges(string[] args)
+        {
+            var agesInterval = args[2];
+            var agesBoundsValues = agesInterval.Split('-');
+            if (agesBoundsValues.Length != 2)
+            {
+                Console.Error.WriteLine("You have entered wrong ages interval.");
+                return null;
+            }
+
+            int minAge, maxAge;
+            var minAgeIsNotCorrect = !int.TryParse(agesBoundsValues[0], out minAge) || minAge < 0;
+            var maxAgeIsNotCorrect = !int.TryParse(agesBoundsValues[1], out maxAge) || maxAge < 0;
+            if (minAgeIsNotCorrect || maxAgeIsNotCorrect || minAge > maxAge)
+            {
+                Console.Error.WriteLine("Ages must be non-negative integer numbers,");
+                Console.Error.WriteLine("such that minAge <= maxAge.");
+                return null;
+            }
+
+            return new int[] { minAge, maxAge };
+        }
+
+        static bool GetActorUserChoice(SqliteConnection connection)
+        {
+            var filmRepo = new FilmRepository(connection);
+            if (filmRepo.GetCount() == 0)
+            {
+                Console.WriteLine("Database has no films yet. You may generate actors without film relations.");
+                Console.WriteLine("Press 'y' key to continue.");
+                Console.WriteLine("Press any other key to exit the program.");
+                var keyInfo = new ConsoleKeyInfo();
+                keyInfo = Console.ReadKey();
+                if (keyInfo.Key != ConsoleKey.Y)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        static bool GetFilmUserChoice(SqliteConnection connection)
+        {
+            var actorRepo = new ActorRepository(connection);
+            if (actorRepo.GetCount() == 0)
+            {
+                Console.WriteLine("Database has no actors yet. You may generate films without actor relations.");
+                Console.WriteLine("Press 'y' key to continue.");
+                Console.WriteLine("Press any other key to exit the program.");
+                var keyInfo = new ConsoleKeyInfo();
+                keyInfo = Console.ReadKey();
+                if (keyInfo.Key != ConsoleKey.Y)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        static void ProcessWriteUsers(string[] args, int entitiesQuantity, SqliteConnection connection)
+        {
+            if (args.Length != 3)
+            {
+                Console.Error.WriteLine("You have entered more than needed arguments.");
+                return;
+            }
+            
+            var dates = ValidateDates(args);
+            if (dates == null)
+            {
+                return;
+            }
+            var startDate = dates[0];
+            var endDate = dates[1];
+            
+
+            var users = Generator.GenerateUsers(entitiesQuantity, startDate, endDate);
             var userRepo = new UserRepository(connection);
             foreach (var user in users)
             {
@@ -189,50 +162,46 @@ namespace MyConsoleProject
         {
             if (args.Length != 4)
             {
-                Console.WriteLine("You have entered more than needed arguments.");
-                return;
-            }
-            var yearsInterval = args[2];
-            var yearsBoundsValues = yearsInterval.Split('-');
-            if (yearsBoundsValues.Length != 2)
-            {
-                Console.WriteLine("You have entered wrong years interval.");
+                Console.Error.WriteLine("You have entered more than needed arguments.");
                 return;
             }
 
-            int startYear, endYear;
-            var startYearIsNotCorrect = !int.TryParse(yearsBoundsValues[0], out startYear) || startYear < 0;
-            var endYearIsNotCorrect = !int.TryParse(yearsBoundsValues[1], out endYear) || endYear < 0;
-            if (startYearIsNotCorrect || endYearIsNotCorrect || startYear > endYear)
+            var userChoice = GetFilmUserChoice(connection);
+            if (!userChoice)
             {
-                Console.WriteLine("Years must be non-negative integer numbers,");
-                Console.WriteLine("such that startYear <= endYear.");
                 return;
             }
 
-            var durationInterval = args[3];
-            var durationBoundsValues = durationInterval.Split('-');
-            if (durationBoundsValues.Length != 2)
+            var years = ValidateYears(args);
+            if (years == null)
             {
-                Console.WriteLine("You have entered wrong durations interval.");
                 return;
             }
+            var startYear = years[0];
+            var endYear = years[1];
 
-            TimeSpan minDuration, maxDuration;
-            var minDurationIsNotCorrect = !TimeSpan.TryParse(durationBoundsValues[0], out minDuration);
-            var maxDurationIsNotCorrect = !TimeSpan.TryParse(durationBoundsValues[1], out maxDuration);
-            if (minDurationIsNotCorrect || maxDurationIsNotCorrect || minDuration > maxDuration)
+            var durations = ValidateDurations(args);
+            if (durations == null)
             {
-                Console.WriteLine("Durations that you have entered are not correct.");
                 return;
             }
+            var minDuration = durations[0];
+            var maxDuration = durations[1];
 
-            var films = GenerateFilms(entitiesQuantity, startYear,
-                endYear, minDuration, maxDuration);
             var filmRepo = new FilmRepository(connection);
+            var actorRepo = new ActorRepository(connection);
+            var startIndex = filmRepo.GetMaxId() + 1;
+            var films = Generator.GenerateFilms(entitiesQuantity, startYear,
+                endYear, minDuration, maxDuration);
             foreach (var film in films)
             {
                 filmRepo.Insert(film);
+            }
+
+            var endIndex = filmRepo.GetMaxId();
+            if (actorRepo.GetCount() != 0)
+            {
+                Generator.GenerateFilmActorRelations(startIndex, endIndex, connection);
             }
         }
 
@@ -240,32 +209,37 @@ namespace MyConsoleProject
         {
             if (args.Length != 3)
             {
-                Console.WriteLine("You have entered more than needed arguments.");
-                return;
-            }
-            var agesInterval = args[2];
-            var agesBoundsValues = agesInterval.Split('-');
-            if (agesBoundsValues.Length != 2)
-            {
-                Console.WriteLine("You have entered wrong ages interval.");
+                Console.Error.WriteLine("You have entered more than needed arguments.");
                 return;
             }
 
-            int minAge, maxAge;
-            var minAgeIsNotCorrect = !int.TryParse(agesBoundsValues[0], out minAge) || minAge < 0;
-            var maxAgeIsNotCorrect = !int.TryParse(agesBoundsValues[1], out maxAge) || maxAge < 0;
-            if (minAgeIsNotCorrect || maxAgeIsNotCorrect || minAge > maxAge)
+            var userChoice = GetActorUserChoice(connection);
+            if (!userChoice)
             {
-                Console.WriteLine("Ages must be non-negative integer numbers,");
-                Console.WriteLine("such that minAge <= maxAge.");
                 return;
             }
 
-            var actors = GenerateActors(entitiesQuantity, minAge, maxAge);
+            var ages = ValidateAges(args);
+            if (ages == null)
+            {
+                return;
+            }
+            var minAge = ages[0];
+            var maxAge = ages[1];
+
+            var filmRepo = new FilmRepository(connection);
             var actorRepo = new ActorRepository(connection);
+            var startIndex = actorRepo.GetMaxId() + 1;
+            var actors = Generator.GenerateActors(entitiesQuantity, minAge, maxAge);
             foreach (var actor in actors)
             {
                 actorRepo.Insert(actor);
+            }
+
+            var endIndex = actorRepo.GetMaxId();
+            if (filmRepo.GetCount() != 0)
+            {
+                Generator.GenerateActorFilmRelations(startIndex, endIndex, connection);
             }
         }
 
@@ -273,28 +247,39 @@ namespace MyConsoleProject
         {
             if (args.Length != 3)
             {
-                Console.WriteLine("You have entered more than needed arguments.");
-                return;
-            }
-            var dateIntervalString = args[2];
-            var dateBoundsValues = dateIntervalString.Split('-');
-            if (dateBoundsValues.Length != 2)
-            {
-                Console.WriteLine("You have entered wrong date interval.");
+                Console.Error.WriteLine("You have entered more than needed arguments.");
                 return;
             }
 
-            DateTime startDate, endDate;
-            var startDateIsNotCorrect = !DateTime.TryParse(dateBoundsValues[0], out startDate);
-            var endDateIsNotCorrect = !DateTime.TryParse(dateBoundsValues[1], out endDate);
-            if (startDateIsNotCorrect || endDateIsNotCorrect || startDate > endDate)
+            var dates = ValidateDates(args);
+            if (dates == null)
             {
-                Console.WriteLine("Dates that you have entered are not correct.");
+                return;
+            }
+            var startDate = dates[0];
+            var endDate = dates[1];
+
+            var userRepo = new UserRepository(connection);
+            var usersCount = userRepo.GetCount();
+            if (usersCount == 0)
+            {
+                Console.Error.WriteLine("Unable to generate reviews: database has no users.");
+                Console.WriteLine("You should generate users or input them via UI.");
                 return;
             }
 
-            var reviews = GenerateReviews(entitiesQuantity, startDate, endDate);
+            var filmRepo = new FilmRepository(connection);
+            var filmsCount = filmRepo.GetCount();
+            if (filmsCount == 0)
+            {
+                Console.Error.WriteLine("Unable to generate reviews: database has no films.");
+                Console.WriteLine("You should generate films or input them via UI.");
+                return;
+            }
+
+            var reviews = Generator.GenerateReviews(entitiesQuantity, startDate, endDate, connection);
             var reviewRepo = new ReviewRepository(connection);
+
             foreach (var review in reviews)
             {
                 reviewRepo.Insert(review);
@@ -303,20 +288,25 @@ namespace MyConsoleProject
 
         static void Main(string[] args)
         {
-            // args = new string[] { "", "", "", "" };
+            // args = new string[] { "film", "12", "2013-2020", "02:23:20-02:25:50" };
+            // args = new string[] { "actor", "5", "19-60"/* , ""  */};
+            // args = new string[] { "user", "5", "19.12.1992-29.4.2020"/* , ""  */};
             var databaseFilePath = "../../data/database.db";
             SqliteConnection connection = new SqliteConnection($"Data Source={databaseFilePath}");
 
             // this conditional needed when user don't wanna generate entities
             if (args.Length == 0)
             {
-                Console.WriteLine("Hello World!");
+                // var actorRepo = new ActorRepository(connection);
+                // Console.WriteLine(actorRepo.GetMaxId());
+                var userRepo = new UserRepository(connection);
+                Console.WriteLine(userRepo.GetMaxId());
                 return;
             }
 
             if (args.Length < 3)
             {
-                Console.WriteLine("You have entered less than needed command arguments.");
+                Console.Error.WriteLine("You have entered less than needed command arguments.");
                 return;
             }
             var entitiesQuantity = 0;
@@ -324,7 +314,7 @@ namespace MyConsoleProject
                 !int.TryParse(args[1], out entitiesQuantity) || entitiesQuantity < 0;
             if (entitiesQuantityIsNotIntegerOrNegativeNumber)
             {
-                Console.WriteLine("Quantity of entities must be positive integer number.");
+                Console.Error.WriteLine("Quantity of entities must be positive integer number.");
                 return;
             }
 
@@ -346,7 +336,7 @@ namespace MyConsoleProject
             }
             else
             {
-                Console.WriteLine($"Unknown entity: {args[0]}");
+                Console.Error.WriteLine($"Unknown entity: {args[0]}");
                 return;
             }
         }

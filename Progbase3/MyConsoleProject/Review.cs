@@ -5,13 +5,14 @@ namespace MyConsoleProject
     public class Review
     {
         public int id;
-        public string header; // textFile with random headers
-        public string overview; // random comment
-        public int rating; // in range from 1 to 10 (round to first digit after comma) ??????
-                           // or ban to input user non-one afretcomma digit
+        public string header;
+        public string overview;
+        public int rating;
         public DateTime lastEdited; // DateTime.Now
-        public Film film;
-        public User author;
+        // public Film film;
+        public int filmId;
+        // public User author;
+        public int userId;
 
         public Review()
         {
@@ -22,12 +23,22 @@ namespace MyConsoleProject
             lastEdited = new DateTime();
         }
 
-        public Review(string header, string overview, int rating, DateTime lastEdited)
+        // public Review(string header, string overview, int rating, DateTime lastEdited)
+        // {
+        //     this.header = header;
+        //     this.overview = overview;
+        //     this.rating = rating;
+        //     this.lastEdited = lastEdited;
+        // }
+
+        public Review(string header, string overview, int rating, DateTime lastEdited, int filmId, int userId)
         {
             this.header = header;
             this.overview = overview;
             this.rating = rating;
             this.lastEdited = lastEdited;
+            this.filmId = filmId;
+            this.userId = userId;
         }
     }
 }

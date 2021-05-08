@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.Data.Sqlite;
 
 namespace MyConsoleProject
@@ -84,6 +85,59 @@ namespace MyConsoleProject
             var nChanged = command.ExecuteNonQuery();
             connection.Close();
             return nChanged == 1;
+        }
+
+        public List<Actor> GetByFilmId(int filmId)
+        {
+            connection.Open();
+
+            SqliteCommand command = connection.CreateCommand();
+            command.CommandText = @"SELECT actors.id, actors.fullName, actors.age, actors.rolePlan
+                                    FROM actors_films CROSS JOIN actors WHERE actors.id = actors_films.actorId
+                                    AND actors_films.filmId = $filmId ORDER BY actors.id";
+            command.Parameters.AddWithValue("$filmId", filmId);
+            SqliteDataReader reader = command.ExecuteReader();
+
+            var filmActors = new List<Actor>();
+            while (reader.Read())
+            {
+                var id = int.Parse(reader.GetString(0));
+                var fullName = reader.GetString(1);
+                var age = int.Parse(reader.GetString(2));
+                var rolePlan = reader.GetString(3);
+
+                var actor = new Actor(id, fullName, age, rolePlan);
+                filmActors.Add(actor);
+            }
+
+            reader.Close();
+            connection.Close();
+            return filmActors;
+        }
+
+        public int GetCount()
+        {
+            connection.Open();
+            SqliteCommand command = connection.CreateCommand();
+            command.CommandText = @"SELECT COUNT(*) FROM actors";
+            int count = Convert.ToInt32(command.ExecuteScalar());
+            connection.Close();
+            return count;
+        }
+
+        public int GetMaxId()
+        {
+            connection.Open();
+            SqliteCommand command = connection.CreateCommand();
+            command.CommandText = @"SELECT max(id) FROM actors";
+            var queryResult = command.ExecuteScalar();
+            if (queryResult is DBNull)
+            {
+                return 0;
+            }
+            int maxId = Convert.ToInt32(queryResult);
+            connection.Close();
+            return maxId;
         }
 
         // private static Task GetTask(SqliteDataReader reader)

@@ -82,11 +82,36 @@ namespace MyConsoleProject
         {
             connection.Open();
             SqliteCommand command = connection.CreateCommand();
-            command.CommandText = @"DELETE FROM reviews WHERE id = $id";
+            command.CommandText = @"DELETE FROM users WHERE id = $id";
             command.Parameters.AddWithValue("$id", id);
             var nChanged = command.ExecuteNonQuery();
             connection.Close();
             return nChanged == 1;
+        }
+
+        public int GetCount()
+        {
+            connection.Open();
+            SqliteCommand command = connection.CreateCommand();
+            command.CommandText = @"SELECT COUNT(*) FROM users";
+            int count = Convert.ToInt32(command.ExecuteScalar());
+            connection.Close();
+            return count;
+        }
+
+        public int GetMaxId()
+        {
+            connection.Open();
+            SqliteCommand command = connection.CreateCommand();
+            command.CommandText = @"SELECT max(id) FROM users";
+            var queryResult = command.ExecuteScalar();
+            if (queryResult is DBNull)
+            {
+                return 0;
+            }
+            int maxId = Convert.ToInt32(queryResult);
+            connection.Close();
+            return maxId;
         }
     }
 }

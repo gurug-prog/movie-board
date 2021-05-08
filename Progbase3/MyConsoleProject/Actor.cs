@@ -25,5 +25,13 @@ namespace MyConsoleProject
             this.age = age;
             this.rolePlan = rolePlan;
         }
+
+        public Actor(int id, string fullName, int age, string rolePlan)
+        {
+            this.id = id;
+            this.fullName = fullName;
+            this.age = age;
+            this.rolePlan = rolePlan;
+        }
     }
 }
