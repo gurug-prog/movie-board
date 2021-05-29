@@ -1,7 +1,8 @@
 using System;
 using Microsoft.Data.Sqlite;
 // using System.Collections.Generic;
-// using System.IO;
+using System.IO;
+using Terminal.Gui;
 
 namespace MyConsoleProject
 {
@@ -140,7 +141,7 @@ namespace MyConsoleProject
                 Console.Error.WriteLine("You have entered more than needed arguments.");
                 return;
             }
-            
+
             var dates = ValidateDates(args);
             if (dates == null)
             {
@@ -148,7 +149,7 @@ namespace MyConsoleProject
             }
             var startDate = dates[0];
             var endDate = dates[1];
-            
+
 
             var users = Generator.GenerateUsers(entitiesQuantity, startDate, endDate);
             var userRepo = new UserRepository(connection);
@@ -292,15 +293,92 @@ namespace MyConsoleProject
             // args = new string[] { "actor", "5", "19-60"/* , ""  */};
             // args = new string[] { "user", "5", "19.12.1992-29.4.2020"/* , ""  */};
             var databaseFilePath = "../../data/database.db";
+            var fileInfo = new FileInfo(databaseFilePath);
+            if (!fileInfo.Exists)
+            {
+                Console.Error.WriteLine("Cannot create connection to DB: database file not found.");
+                return;
+            }
             SqliteConnection connection = new SqliteConnection($"Data Source={databaseFilePath}");
-
             // this conditional needed when user don't wanna generate entities
+
             if (args.Length == 0)
             {
-                // var actorRepo = new ActorRepository(connection);
-                // Console.WriteLine(actorRepo.GetMaxId());
+                // Application.Init();
+
+                // var window = new Window("Hello");
+                // var top = Application.Top;
+                // var frame = top.Frame;
+                // var window = new Window();
+                // window.X = 4;
+                // window.Y = 2;
+                // window.Width = 10;
+                // window.Height = 5;
+                // Add(window);
+
+                // Application.Top.Add(window);
+                // Application.Run();
+                // System.Threading.Thread.Sleep(2000);
+                // Application.RequestStop();
+
+                // Application.Init();
+                // var top1 = Application.Top;
+
+                // var win1 = new AuthorizationWindow();
+                // top1.Add(win1);
+
+                // Application.Run();
+
                 var userRepo = new UserRepository(connection);
-                Console.WriteLine(userRepo.GetMaxId());
+
+                Application.Init();
+                var top = Application.Top;
+
+                var win = new MainWindow();
+                win.SetRepository(userRepo);
+                top.Add(win);
+
+                Application.Run();
+
+                // userRepo = new UserRepository(connection);
+
+                // Application.Init();
+                // var top = Application.Top;
+                // var win = new Window("Users DB");
+                // top.Add(win);
+
+                // var frame = new Rect(2, 8, top.Frame.Width, 20);
+                // allUsersListView = new ListView(frame, userRepo.GetAll());
+                // allUsersListView.OpenSelectedItem += OnOpenUser;
+                // win.Add(allUsersListView);
+
+                // var createNewUserBtn = new Button(2, 4, "Create new user");
+                // createNewUserBtn.Clicked += OnCreateButtonClicked;
+                // win.Add(createNewUserBtn);
+
+                // Application.Run();
+
+
+                // var reviewRepo = new ReviewRepository(connection);
+
+                // // serialize reviews
+                // var list = reviewRepo.GetByFilmId(121);
+                // // var reviews = new Reviews();
+                // // reviews.reviews = list;
+                // // Exporter.SerializeReviews("./out.xml", reviews);
+
+                // // deserialize reviews
+                // // var reviews = Exporter.DeserializeReviews("./out.xml");
+                // // foreach (var review in reviews.reviews)
+                // // {
+                // //     reviewRepo.Insert(review);
+                // // }
+
+
+                // // var actorRepo = new ActorRepository(connection);
+                // // Console.WriteLine(actorRepo.GetMaxId());
+                // // var userRepo = new UserRepository(connection);
+                // // Console.WriteLine(userRepo.GetMaxId());
                 return;
             }
 

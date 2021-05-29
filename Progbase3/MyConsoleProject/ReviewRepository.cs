@@ -151,6 +151,16 @@ namespace MyConsoleProject
             return userReviews;
         }
 
+
+        /////////////////////
+        /////////////////////
+        /////////////////////
+        /////////////////////
+        /////////////////////
+        /////////////////////
+        /////////////////////
+        /////////////////////
+        // метод для екпорту
         public List<Review> GetByFilmId(int filmId)
         {
             connection.Open();
@@ -170,7 +180,7 @@ namespace MyConsoleProject
                 var lastEdited = DateTime.Parse(reader.GetString(4));
                 var userId = int.Parse(reader.GetString(5));
 
-                var review = new Review(header, overview, rating, lastEdited, filmId, userId);
+                var review = new Review(id, header, overview, rating, lastEdited, filmId, userId);
                 filmReviews.Add(review);
             }
 

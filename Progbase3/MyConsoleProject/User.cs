@@ -6,8 +6,8 @@ namespace MyConsoleProject
     public class User
     {
         public int id;
-        public string login; // textFile with logins
-        public string password; // random string (generator method)
+        public string login;
+        public string password;
         public string role; // moderator or author or admin
         public DateTime signUpDate; // DateTime.Now
         public List<Review> reviews;
@@ -27,6 +27,11 @@ namespace MyConsoleProject
             this.password = password;
             this.role = role;
             this.signUpDate = signUpDate;
+        }
+
+        public override string ToString()
+        {
+            return String.Format("{0, -6} {1, -15} {2}", "[" + id + "]", login, "(" + role + ")");
         }
     }
 }
