@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Microsoft.Data.Sqlite;
 // using System.Collections.Generic;
 using System.IO;
@@ -329,12 +329,12 @@ namespace MyConsoleProject
 
                 // Application.Run();
 
-                var userRepo = new FilmRepository(connection);
+                var userRepo = new ActorRepository(connection);
 
                 Application.Init();
                 var top = Application.Top;
 
-                var win = new FilmWindow();
+                var win = new ActorWindow();
                 win.SetRepository(userRepo);
                 top.Add(win);
 

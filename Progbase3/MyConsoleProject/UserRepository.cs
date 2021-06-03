@@ -126,20 +126,12 @@ namespace MyConsoleProject
             command.Parameters.AddWithValue("$value", searchValue);
 
             SqliteDataReader reader = command.ExecuteReader();
-            // List<User> users = null;
             List<User> users = new List<User>();
             while (reader.Read())
             {
                 var user = GetUser(reader);
                 users.Add(user);
             }
-            ////////////
-            ////////////
-            ////////////
-            // if (users.Count == 0)
-            // {
-            //     users.Add(new User());
-            // }
             reader.Close();
             connection.Close();
             return users;
@@ -153,13 +145,6 @@ namespace MyConsoleProject
             command.Parameters.AddWithValue("$value", searchValue);
             int count = Convert.ToInt32(command.ExecuteScalar());
             var pagesCount = (int)Math.Ceiling(count / 10.0);
-            ////////////
-            ////////////
-            ////////////
-            // if (pagesCount == 0)
-            // {
-            //     pagesCount++;
-            // }
             connection.Close();
             return pagesCount;
         }

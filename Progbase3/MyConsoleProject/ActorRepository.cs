@@ -140,6 +140,87 @@ namespace MyConsoleProject
             return maxId;
         }
 
+        public int GetSearchPagesCount(string searchValue)
+        {
+            connection.Open();
+            SqliteCommand command = connection.CreateCommand();
+            command.CommandText = @"SELECT COUNT(*) FROM actors WHERE fullName LIKE '%' || $value || '%'";
+            command.Parameters.AddWithValue("$value", searchValue);
+            int count = Convert.ToInt32(command.ExecuteScalar());
+            var pagesCount = (int)Math.Ceiling(count / 10.0);
+            connection.Close();
+            return pagesCount;
+        }
+
+        public List<Actor> GetSearchPages(string searchValue, int page)
+        {
+            connection.Open();
+            SqliteCommand command = connection.CreateCommand();
+            var pageLength = 10;
+            command.CommandText = @"SELECT * FROM actors WHERE fullName LIKE '%'
+                                    || $value || '%' LIMIT 10 OFFSET $offset";
+            command.Parameters.AddWithValue("$offset", (page - 1) * pageLength);
+            command.Parameters.AddWithValue("$value", searchValue);
+
+            SqliteDataReader reader = command.ExecuteReader();
+            List<Actor> actors = new List<Actor>();
+            while (reader.Read())
+            {
+                var actor = GetActor(reader);
+                actors.Add(actor);
+            }
+            reader.Close();
+            connection.Close();
+            return actors;
+        }
+
+        public int GetTotalPages()
+        {
+            connection.Open();
+            SqliteCommand command = connection.CreateCommand();
+            command.CommandText = @"SELECT COUNT(*) FROM actors";
+            int count = Convert.ToInt32(command.ExecuteScalar());
+            var pagesQuantity = (int)Math.Ceiling(count / 10.0);
+            connection.Close();
+            return pagesQuantity;
+        }
+
+        public List<Actor> GetPage(int pageNumber)
+        {
+            if (pageNumber < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(pageNumber));
+            }
+            connection.Open();
+            var pageLength = 10;
+            SqliteCommand command = connection.CreateCommand();
+            command.CommandText =
+            @"SELECT * FROM actors LIMIT 10 OFFSET $offset";
+            command.Parameters.AddWithValue("$offset", (pageNumber - 1) * pageLength);
+
+            var reader = command.ExecuteReader();
+            var pageActors = new List<Actor>();
+
+            while (reader.Read())
+            {
+                pageActors.Add(GetActor(reader));
+            }
+
+            reader.Close();
+            connection.Close();
+            return pageActors;
+        }
+
+        public Actor GetActor(SqliteDataReader reader)
+        {
+            var actor = new Actor();
+            actor.id = int.Parse(reader.GetString(0));
+            actor.fullName = reader.GetString(1);
+            actor.age = int.Parse(reader.GetString(2));
+            actor.rolePlan = reader.GetString(3);
+            return actor;
+        }
+
         // private static Task GetTask(SqliteDataReader reader)
         // {
         //     var task = new Task();

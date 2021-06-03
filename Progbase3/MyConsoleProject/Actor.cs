@@ -33,5 +33,10 @@ namespace MyConsoleProject
             this.age = age;
             this.rolePlan = rolePlan;
         }
+
+        public override string ToString()
+        {
+            return String.Format("{0, -6} {1, -25} {2}", "[" + id + "]", fullName, "(" + rolePlan + ")");
+        }
     }
 }
