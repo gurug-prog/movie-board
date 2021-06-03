@@ -329,12 +329,12 @@ namespace MyConsoleProject
 
                 // Application.Run();
 
-                var userRepo = new ActorRepository(connection);
+                var userRepo = new ReviewRepository(connection);
 
                 Application.Init();
                 var top = Application.Top;
 
-                var win = new ActorWindow();
+                var win = new ReviewWindow();
                 win.SetRepository(userRepo);
                 top.Add(win);
 

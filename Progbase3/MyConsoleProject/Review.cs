@@ -27,13 +27,6 @@ namespace MyConsoleProject
             lastEdited = new DateTime();
         }
 
-        // public Review(string header, string overview, int rating, DateTime lastEdited)
-        // {
-        //     this.header = header;
-        //     this.overview = overview;
-        //     this.rating = rating;
-        //     this.lastEdited = lastEdited;
-        // }
         public Review(int id, string header, string overview, int rating, DateTime lastEdited, int filmId, int userId)
         {
             this.id = id;
@@ -53,6 +46,11 @@ namespace MyConsoleProject
             this.lastEdited = lastEdited;
             this.filmId = filmId;
             this.userId = userId;
+        }
+
+        public override string ToString()
+        {
+            return String.Format("{0, -6} {1, -15} {2}", "[" + id + "]", header, "(" + rating + ")");
         }
     }
 }

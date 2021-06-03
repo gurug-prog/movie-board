@@ -5,11 +5,11 @@ using NStack;
 
 namespace MyConsoleProject
 {
-    public class MainWindow : Window
+    public class ReviewWindow : Window
     {
         private Label emptyDBLbl;
-        private ListView usersListView;
-        private UserRepository userRepo;
+        private ListView reviewsListView;
+        private ReviewRepository reviewRepo;
         private Label totalPagesLbl;
         private FrameView frameView;
         private Label pageLbl;
@@ -19,19 +19,19 @@ namespace MyConsoleProject
         private int page = 1;
         private string searchValue = "";
 
-        public MainWindow()
+        public ReviewWindow()
         {
-            this.Title = "User Database";
+            this.Title = "Review Database";
             emptyDBLbl = new Label(2, 14, "Nothing found");
             this.Add(emptyDBLbl);
 
             var frame = new Rect(0, 0, 200, 10);
-            usersListView = new ListView(frame, new List<User>())
+            reviewsListView = new ListView(frame, new List<Review>())
             {
                 Width = Dim.Fill(),
                 Height = Dim.Fill(),
             };
-            usersListView.OpenSelectedItem += OnOpenUser;
+            reviewsListView.OpenSelectedItem += OnOpenReview;
 
             prevPageBtn = new Button(2, 6, "Prev");
             prevPageBtn.Clicked += OnPrevPage;
@@ -59,29 +59,28 @@ namespace MyConsoleProject
 
             this.Add(prevPageBtn, pageLbl, totalPagesLbl, nextPageBtn);
 
-            frameView = new FrameView("Users")
+            frameView = new FrameView("Reviews")
             {
                 X = 2,
                 Y = 8,
                 Width = Dim.Percent(62),
                 Height = pageLength + 2,
             };
-            frameView.Add(usersListView);
+            frameView.Add(reviewsListView);
             this.Add(frameView);
 
-            var createUserBtn = new Button(2, 2, "Create new user");
-            createUserBtn.Clicked += OnCreateButtonClicked;
-            this.Add(createUserBtn);
+            var createReviewBtn = new Button(2, 2, "Create new review");
+            createReviewBtn.Clicked += OnCreateButtonClicked;
+            this.Add(createReviewBtn);
 
             searchInput = new TextField(2, 4, 20, "");
             searchInput.TextChanged += OnSearchChanging;
             this.Add(searchInput);
 
-            // var radioWidth = 10;
             var radioGroup = new RadioGroup(new NStack.ustring[]{ "film", "user", "review", "actor" })
             {
                 X = Pos.AnchorEnd() - Pos.Percent(20),
-                Y = Pos.AnchorEnd() - Pos.Percent(60),
+                Y = Pos.AnchorEnd() - Pos.Percent(20),
             };
             this.Add(radioGroup);
         }
@@ -92,15 +91,15 @@ namespace MyConsoleProject
             this.ShowCurrentPage();
         }
 
-        public void SetRepository(UserRepository userRepo)
+        public void SetRepository(ReviewRepository reviewRepo)
         {
-            this.userRepo = userRepo;
+            this.reviewRepo = reviewRepo;
             this.ShowCurrentPage();
         }
 
         private void ShowCurrentPage()
         {
-            int pages = userRepo.GetSearchPagesCount(searchValue);
+            int pages = reviewRepo.GetSearchPagesCount(searchValue);
             if (pages != 0)
             {
                 emptyDBLbl.Visible = false;
@@ -142,7 +141,7 @@ namespace MyConsoleProject
 
             try
             {
-                this.usersListView.SetSource(userRepo.GetSearchPages(searchValue, page));
+                this.reviewsListView.SetSource(reviewRepo.GetSearchPages(searchValue, page));
             }
             catch (Exception)
             {
@@ -153,68 +152,68 @@ namespace MyConsoleProject
 
         public void OnCreateButtonClicked()
         {
-            var dialog = new CreateUserDialog();
+            var dialog = new CreateReviewDialog();
             Application.Run(dialog);
 
             if (!dialog.canceled)
             {
-                var user = new User();
+                var review = new Review();
                 try
                 {
-                    user = dialog.GetUser();
+                    review = dialog.GetReview();
                 }
                 catch (Exception)
                 {
                     MessageBox.ErrorQuery("Error", "Got wrong input", "OK");
                     return;
                 }
-                user.id = userRepo.Insert(user);
+                review.id = reviewRepo.Insert(review);
 
                 ShowCurrentPage();
                 try
                 {
-                    this.usersListView.SetSource(userRepo.GetPage(page));
+                    this.reviewsListView.SetSource(reviewRepo.GetPage(page));
                 }
                 catch (Exception)
                 {
                     MessageBox.ErrorQuery("Error", "Unable to get empty data", "OK");
                 }
-                OpenUser(user);
+                OpenReview(review);
             }
         }
 
-        private void OpenUser(User user)
+        private void OpenReview(Review review)
         {
-            OpenUserDialog dialog = new OpenUserDialog();
-            dialog.SetUser(user);
+            var dialog = new OpenReviewDialog();
+            dialog.SetReview(review);
 
             Application.Run(dialog);
 
             if (dialog.isUpdated)
             {
-                bool result = userRepo.Update(user.id, dialog.GetUser());
+                bool result = reviewRepo.Update(review.id, dialog.GetReview());
                 if (result)
                 {
-                    usersListView.SetSource(userRepo.GetPage(page));
+                    reviewsListView.SetSource(reviewRepo.GetPage(page));
                 }
                 else
                 {
-                    MessageBox.ErrorQuery("Update user", "Cannot update user", "OK");
+                    MessageBox.ErrorQuery("Update review", "Cannot update review", "OK");
                 }
             }
 
             if (dialog.isDeleted)
             {
-                bool result = userRepo.DeleteById(user.id);
+                bool result = reviewRepo.DeleteById(review.id);
                 if (result == true)
                 {
-                    int pages = (int)userRepo.GetTotalPages();
+                    int pages = (int)reviewRepo.GetTotalPages();
                     if (page > pages && page > 1)
                     {
                         page--;
                         try
                         {
-                            this.usersListView.SetSource(userRepo.GetPage(page));
+                            this.reviewsListView.SetSource(reviewRepo.GetPage(page));
                         }
                         catch (Exception)
                         {
@@ -225,7 +224,7 @@ namespace MyConsoleProject
                 }
                 else
                 {
-                    MessageBox.ErrorQuery("Delete user", "Cannot delete user", "OK");
+                    MessageBox.ErrorQuery("Delete review", "Cannot delete review", "OK");
                 }
             }
         }
@@ -243,7 +242,7 @@ namespace MyConsoleProject
 
         private void OnNextPage()
         {
-            int totalPages = userRepo.GetTotalPages();
+            int totalPages = reviewRepo.GetTotalPages();
             if (page >= totalPages)
             {
                 return;
@@ -253,10 +252,10 @@ namespace MyConsoleProject
             ShowCurrentPage();
         }
 
-        public void OnOpenUser(ListViewItemEventArgs args)
+        public void OnOpenReview(ListViewItemEventArgs args)
         {
-            var user = (User)args.Value;
-            OpenUser(user);
+            var review = (Review)args.Value;
+            OpenReview(review);
         }
     }
 }
