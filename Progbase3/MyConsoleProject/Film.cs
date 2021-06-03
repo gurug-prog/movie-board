@@ -32,5 +32,10 @@ namespace MyConsoleProject
             this.country = country;
             this.duration = duration;
         }
+
+        public override string ToString()
+        {
+            return String.Format("{0, -6} {1, -40} {2}", "[" + id + "]", title, "(" + country + ")");
+        }
     }
 }

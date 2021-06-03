@@ -218,16 +218,16 @@ namespace MyConsoleProject
             command.Parameters.AddWithValue("$offset", (pageNumber - 1) * pageLength);
 
             var reader = command.ExecuteReader();
-            var pageTasks = new List<User>();
+            var pageUsers = new List<User>();
 
             while (reader.Read())
             {
-                pageTasks.Add(GetUser(reader));
+                pageUsers.Add(GetUser(reader));
             }
 
             reader.Close();
             connection.Close();
-            return pageTasks;
+            return pageUsers;
         }
     }
 }

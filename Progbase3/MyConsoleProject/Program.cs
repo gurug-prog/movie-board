@@ -329,12 +329,12 @@ namespace MyConsoleProject
 
                 // Application.Run();
 
-                var userRepo = new UserRepository(connection);
+                var userRepo = new FilmRepository(connection);
 
                 Application.Init();
                 var top = Application.Top;
 
-                var win = new MainWindow();
+                var win = new FilmWindow();
                 win.SetRepository(userRepo);
                 top.Add(win);
 
