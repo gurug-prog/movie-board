@@ -77,7 +77,6 @@ namespace MyConsoleProject
             searchInput.TextChanged += OnSearchChanging;
             this.Add(searchInput);
 
-            // var radioWidth = 10;
             var radioGroup = new RadioGroup(new NStack.ustring[]{ "film", "user", "review", "actor" })
             {
                 X = Pos.AnchorEnd() - Pos.Percent(20),

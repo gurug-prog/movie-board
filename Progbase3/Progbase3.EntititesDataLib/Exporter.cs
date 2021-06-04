@@ -1,6 +1,8 @@
+using System;
 using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
+using Microsoft.Data.Sqlite;
 
 namespace MyConsoleProject
 {
@@ -8,9 +10,22 @@ namespace MyConsoleProject
     {
         public static Reviews DeserializeReviews(string filePath)
         {
-            var reader = new StreamReader(filePath);
+            var reader = XmlReader.Create(filePath);
             var ser = new XmlSerializer(typeof(Reviews));
-            var reviews = (Reviews)ser.Deserialize(reader);
+            if (!ser.CanDeserialize(reader))
+            {
+                throw new ArgumentException("Can not deserialize given document.");
+            }
+
+            Reviews reviews = null;
+            try
+            {
+                reviews = (Reviews)ser.Deserialize(reader);
+            }
+            catch (Exception)
+            {
+                throw new ArgumentException("Can not deserialize given document.");
+            }
             reader.Close();
             return reviews;
         }
@@ -24,6 +39,25 @@ namespace MyConsoleProject
             settings.NewLineHandling = NewLineHandling.Entitize;
             var writer = XmlWriter.Create(output, settings);
             ser.Serialize(writer, reviews);
+        }
+
+        public static void ExportReviews(int filmId, string exportDirectory, SqliteConnection connection)
+        {
+            var reviewRepo = new ReviewRepository(connection);
+            var list = reviewRepo.GetByFilmId(filmId);
+            var reviews = new Reviews();
+            reviews.reviews = list;
+            Exporter.SerializeReviews(exportDirectory + "/out.xml", reviews);
+        }
+
+        public static void ImportReviews(string exportFile, SqliteConnection connection)
+        {
+            var reviewRepo = new ReviewRepository(connection);
+            var reviews = Exporter.DeserializeReviews(exportFile);
+            foreach (var review in reviews.reviews)
+            {
+                reviewRepo.Insert(review);
+            }
         }
     }
 }

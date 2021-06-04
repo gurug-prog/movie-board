@@ -151,6 +151,35 @@ namespace MyConsoleProject
             return userReviews;
         }
 
+        public double[] GetPlotData()
+        {
+            connection.Open();
+
+            SqliteCommand command = connection.CreateCommand();
+            command.CommandText = @"SELECT rating FROM reviews";
+            SqliteDataReader reader = command.ExecuteReader();
+
+            var marksCounts = new double[10];
+            while (reader.Read())
+            {
+                var mark = int.Parse(reader.GetString(0));
+                if (mark == 1) { marksCounts[0]++; }
+                else if (mark == 2) { marksCounts[1]++; }
+                else if (mark == 3) { marksCounts[2]++; }
+                else if (mark == 4) { marksCounts[3]++; }
+                else if (mark == 5) { marksCounts[4]++; }
+                else if (mark == 6) { marksCounts[5]++; }
+                else if (mark == 7) { marksCounts[6]++; }
+                else if (mark == 8) { marksCounts[7]++; }
+                else if (mark == 9) { marksCounts[8]++; }
+                else if (mark == 10) { marksCounts[9]++; }
+            }
+
+            reader.Close();
+            connection.Close();
+            return marksCounts;
+        }
+
 
         /////////////////////
         /////////////////////
@@ -210,6 +239,8 @@ namespace MyConsoleProject
             connection.Close();
             return reviews;
         }
+
+
 
         public int GetSearchPagesCount(string searchValue)
         {

@@ -1,4 +1,3 @@
-using System;
 using Terminal.Gui;
 
 namespace MyConsoleProject

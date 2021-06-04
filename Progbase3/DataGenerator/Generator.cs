@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using Microsoft.Data.Sqlite;
+using ScottPlot;
 
 namespace MyConsoleProject
 {
@@ -256,6 +257,22 @@ namespace MyConsoleProject
                 reviews.Add(review);
             }
             return reviews;
+        }
+
+        public static void GeneratePlot(double[] ys)
+        {
+            var plt = new ScottPlot.Plot(600, 400);
+
+            int pointCount = 10;
+            double[] xs = DataGen.Consecutive(pointCount);
+
+            plt.PlotBar(xs, ys, horizontal: true);
+            plt.Axis(x1: 0);
+            plt.Grid(enableHorizontal: false, lineStyle: LineStyle.Dot);
+
+            string[] labels = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10" };
+            plt.YTicks(xs, labels);
+            plt.SaveFig("./../ratings.png");
         }
     }
 }
