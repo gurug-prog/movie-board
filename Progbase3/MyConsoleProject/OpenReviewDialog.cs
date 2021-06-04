@@ -44,7 +44,7 @@ namespace MyConsoleProject
             };
             this.Add(reviewOverviewLbl, reviewOverviewInput);
 
-            var reviewRatingLbl = new Label(2, 6, "Role:");
+            var reviewRatingLbl = new Label(2, 6, "Rating:");
             reviewRatingInput = new TextField("")
             {
                 X = rightColumnX,
@@ -64,7 +64,7 @@ namespace MyConsoleProject
             };
             this.Add(reviewFilmIdLbl, reviewFilmIdInput);
 
-            var reviewUserIdLbl = new Label(2, 10, "FilmId:");
+            var reviewUserIdLbl = new Label(2, 10, "UserId:");
             reviewUserIdInput = new TextField("")
             {
                 X = rightColumnX,
@@ -129,6 +129,7 @@ namespace MyConsoleProject
         public void SetReview(Review review)
         {
             this.review = review;
+            this.reviewHeaderInput.Text = review.header;
             this.reviewOverviewInput.Text = review.overview;
             this.reviewRatingInput.Text = review.rating.ToString();
             this.reviewFilmIdInput.Text = review.filmId.ToString();

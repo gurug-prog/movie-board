@@ -160,24 +160,6 @@ namespace MyConsoleProject
             return user;
         }
 
-        // public List<User> GetAll()
-        // {
-        //     connection.Open();
-        //     var command = connection.CreateCommand();
-        //     command.CommandText = @"SELECT * FROM users";
-        //     var reader = command.ExecuteReader();
-        //     var users = new List<User>();
-
-        //     while (reader.Read())
-        //     {
-        //         users.Add(GetUser(reader));
-        //     }
-
-        //     reader.Close();
-        //     connection.Close();
-        //     return users;
-        // }
-
         public int GetTotalPages()
         {
             connection.Open();

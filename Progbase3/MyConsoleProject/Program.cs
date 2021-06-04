@@ -11,80 +11,31 @@ namespace MyConsoleProject
         static string importFilePath;
         static SqliteConnection connection;
 
-        public static void Main(string[] args)
+        public static void RunUserInterface()
         {
-            var databaseFilePath = "../../data/database.db";
-            var fileInfo = new FileInfo(databaseFilePath);
-            if (!fileInfo.Exists)
-            {
-                Console.Error.WriteLine("Cannot create connection to DB: database file not found.");
-                return;
-            }
-            connection = new SqliteConnection($"Data Source={databaseFilePath}");
-            // this conditional needed when user don't wanna generate entities
-            if (args.Length == 0)
-            {
+            var userRepo = new ReviewRepository(connection);
 
-                var userRepo = new ActorRepository(connection);
+            Application.Init();
+            var top = Application.Top;
+            var win = new ReviewWindow();
 
-                Application.Init();
-                var top = Application.Top;
-                var win = new ActorWindow();
+            var menu = new MenuBar(new MenuBarItem[] {
+                new MenuBarItem ("_File", new MenuItem [] {
+                    new MenuItem ("_Export...","", OnExport),
+                    new MenuItem ("_Import...","", OnImport),
+                    new MenuItem ("_Exit", "", OnExit)
+                }),
+                new MenuBarItem ("_Help", new MenuItem [] {
+                    new MenuItem ("_GetPlor", "", OnGetPlot),
+                    new MenuItem ("_About", "", OnAbout)
+                }),
+            });
 
-                var menu = new MenuBar(new MenuBarItem[] {
-                    new MenuBarItem ("_File", new MenuItem [] {
-                        new MenuItem ("_Export...","", OnExport),
-                        new MenuItem ("_Import...","", OnImport),
-                        new MenuItem ("_Exit", "", OnExit)
-                    }),
-                    new MenuBarItem ("_Help", new MenuItem [] {
-                        new MenuItem ("_GetPlor", "", OnGetPlot),
-                        new MenuItem ("_About", "", OnAbout)
-                    }),
-                });
+            win.SetRepository(userRepo);
+            top.Add(win, menu);
 
-                win.SetRepository(userRepo);
-                top.Add(win, menu);
-
-                Application.Run();
-                return;
-            }
-
-            if (args.Length < 3)
-            {
-                Console.Error.WriteLine("You have entered less than needed command arguments.");
-                return;
-            }
-            var entitiesQuantity = 0;
-            var entitiesQuantityIsNotIntegerOrNegativeNumber =
-                !int.TryParse(args[1], out entitiesQuantity) || entitiesQuantity < 0;
-            if (entitiesQuantityIsNotIntegerOrNegativeNumber)
-            {
-                Console.Error.WriteLine("Quantity of entities must be positive integer number.");
-                return;
-            }
-
-            if (args[0] == "user")
-            {
-                GenerationProcessor.ProcessWriteUsers(args, entitiesQuantity, connection);
-            }
-            else if (args[0] == "film")
-            {
-                GenerationProcessor.ProcessWriteFilms(args, entitiesQuantity, connection);
-            }
-            else if (args[0] == "actor")
-            {
-                GenerationProcessor.ProcessWriteActors(args, entitiesQuantity, connection);
-            }
-            else if (args[0] == "review")
-            {
-                GenerationProcessor.ProcessWriteReviews(args, entitiesQuantity, connection);
-            }
-            else
-            {
-                Console.Error.WriteLine($"Unknown entity: {args[0]}");
-                return;
-            }
+            Application.Run();
+            return;
         }
 
         static void OnExit()
@@ -120,8 +71,9 @@ namespace MyConsoleProject
                 return;
             }
 
+            var filmId = 25;
             exportDirectory = filePath.ToString();
-            Exporter.ExportReviews(28, exportDirectory, connection);
+            Exporter.ExportReviews(filmId, exportDirectory, connection);
         }
 
         static void OnImport()
@@ -149,6 +101,63 @@ namespace MyConsoleProject
             var reviewRepo = new ReviewRepository(connection);
             var ys = reviewRepo.GetPlotData();
             Generator.GeneratePlot(ys);
+        }
+
+        static void Main(string[] args)
+        {
+            var databaseFilePath = "../../data/database.db";
+            var fileInfo = new FileInfo(databaseFilePath);
+            if (!fileInfo.Exists)
+            {
+                Console.Error.WriteLine("Cannot create connection to DB: database file not found.");
+                return;
+            }
+            connection = new SqliteConnection($"Data Source={databaseFilePath}");
+            ProcessCommandArguments(args, connection);
+        }
+
+        static void ProcessCommandArguments(string[] args, SqliteConnection connection)
+        {
+            if (args.Length == 0)
+            {
+                Program.RunUserInterface();
+                return;
+            }
+            if (args.Length < 3)
+            {
+                Console.Error.WriteLine("You have entered less than needed command arguments.");
+                return;
+            }
+            var entitiesQuantity = 0;
+            var entitiesQuantityIsNotIntegerOrNegativeNumber =
+                !int.TryParse(args[1], out entitiesQuantity) || entitiesQuantity < 0;
+            if (entitiesQuantityIsNotIntegerOrNegativeNumber)
+            {
+                Console.Error.WriteLine("Quantity of entities must be positive integer number.");
+                return;
+            }
+
+            if (args[0] == "user")
+            {
+                GenerationProcessor.ProcessWriteUsers(args, entitiesQuantity, connection);
+            }
+            else if (args[0] == "film")
+            {
+                GenerationProcessor.ProcessWriteFilms(args, entitiesQuantity, connection);
+            }
+            else if (args[0] == "actor")
+            {
+                GenerationProcessor.ProcessWriteActors(args, entitiesQuantity, connection);
+            }
+            else if (args[0] == "review")
+            {
+                GenerationProcessor.ProcessWriteReviews(args, entitiesQuantity, connection);
+            }
+            else
+            {
+                Console.Error.WriteLine($"Unknown entity: {args[0]}");
+                return;
+            }
         }
     }
 }

@@ -48,7 +48,7 @@ namespace MyConsoleProject
 
         public override string ToString()
         {
-            return String.Format("{0, -6} {1, -15} {2}", "[" + id + "]", header, "(" + rating + ")");
+            return String.Format("{0, -6} {1, -50} mark: {2}", "[" + id + "]", header, "(" + rating + ")");
         }
     }
 }

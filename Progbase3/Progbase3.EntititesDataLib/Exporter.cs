@@ -14,7 +14,9 @@ namespace MyConsoleProject
             var ser = new XmlSerializer(typeof(Reviews));
             if (!ser.CanDeserialize(reader))
             {
-                throw new ArgumentException("Can not deserialize given document.");
+                Console.Clear();
+                Console.Error.WriteLine("Can not deserialize given document.");
+                Environment.Exit(0);
             }
 
             Reviews reviews = null;
@@ -24,7 +26,9 @@ namespace MyConsoleProject
             }
             catch (Exception)
             {
-                throw new ArgumentException("Can not deserialize given document.");
+                Console.Clear();
+                Console.Error.WriteLine("Can not deserialize given document.");
+                Environment.Exit(0);
             }
             reader.Close();
             return reviews;

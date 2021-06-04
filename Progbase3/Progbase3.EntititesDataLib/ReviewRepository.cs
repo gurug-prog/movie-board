@@ -180,16 +180,6 @@ namespace MyConsoleProject
             return marksCounts;
         }
 
-
-        /////////////////////
-        /////////////////////
-        /////////////////////
-        /////////////////////
-        /////////////////////
-        /////////////////////
-        /////////////////////
-        /////////////////////
-        // метод для екпорту
         public List<Review> GetByFilmId(int filmId)
         {
             connection.Open();
@@ -239,8 +229,6 @@ namespace MyConsoleProject
             connection.Close();
             return reviews;
         }
-
-
 
         public int GetSearchPagesCount(string searchValue)
         {

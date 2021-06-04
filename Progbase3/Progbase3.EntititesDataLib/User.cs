@@ -8,8 +8,8 @@ namespace MyConsoleProject
         public int id;
         public string login;
         public string password;
-        public string role; // moderator or author or admin
-        public DateTime signUpDate; // DateTime.Now
+        public string role;
+        public DateTime signUpDate;
         public List<Review> reviews;
 
         public User()

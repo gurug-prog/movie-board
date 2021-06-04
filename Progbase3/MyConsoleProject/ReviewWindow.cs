@@ -63,7 +63,7 @@ namespace MyConsoleProject
             {
                 X = 2,
                 Y = 8,
-                Width = Dim.Percent(62),
+                Width = Dim.Percent(80),
                 Height = pageLength + 2,
             };
             frameView.Add(reviewsListView);
@@ -76,13 +76,6 @@ namespace MyConsoleProject
             searchInput = new TextField(2, 4, 20, "");
             searchInput.TextChanged += OnSearchChanging;
             this.Add(searchInput);
-
-            var radioGroup = new RadioGroup(new NStack.ustring[]{ "film", "user", "review", "actor" })
-            {
-                X = Pos.AnchorEnd() - Pos.Percent(20),
-                Y = Pos.AnchorEnd() - Pos.Percent(20),
-            };
-            this.Add(radioGroup);
         }
 
         private void OnSearchChanging(ustring args)
