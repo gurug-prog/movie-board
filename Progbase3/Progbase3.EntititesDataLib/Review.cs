@@ -10,11 +10,9 @@ namespace MyConsoleProject
         public string overview;
         public int rating;
         [XmlElement("lastedited")]
-        public DateTime lastEdited; // DateTime.Now
-        // public Film film;
+        public DateTime lastEdited;
         [XmlElement("filmid")]
         public int filmId;
-        // public User author;
         [XmlElement("userid")]
         public int userId;
 

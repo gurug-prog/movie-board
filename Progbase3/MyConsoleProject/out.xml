@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <review>
+    <id>41</id>
+    <header>Few serve lowly satisfying</header>
+    <overview>It may be the remake of 1987 Autumn's Tale after eleven years, as the director Mabel Cheung claimed. Mabel employs rock music as the medium in this movie to express her personal attitude to life, in which love, desire and the consequent</overview>
+    <rating>7</rating>
+    <lastedited>2004-04-08T23:55:32</lastedited>
+    <filmid>121</filmid>
+    <userid>47</userid>
+  </review>
+  <review>
+    <id>42</id>
+    <header>Educated shake</header>
+    <overview>My Super Ex Girlfriend turned out to be a pleasant surprise for me, I was really expecting a horrible movie that would probably be stupid and predictable, and you know what? It was! But this movie did have so many wo</overview>
+    <rating>4</rating>
+    <lastedited>2019-07-20T19:30:58</lastedited>
+    <filmid>121</filmid>
+    <userid>48</userid>
+  </review>
+</root>

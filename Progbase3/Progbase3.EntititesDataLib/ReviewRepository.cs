@@ -263,13 +263,13 @@ namespace MyConsoleProject
         public Review GetReview(SqliteDataReader reader)
         {
             var review = new Review();
-            var id = int.Parse(reader.GetString(0));
-            var header = reader.GetString(1);
-            var overview = reader.GetString(2);
-            var rating = int.Parse(reader.GetString(3));
-            var lastEdited = DateTime.Parse(reader.GetString(4));
-            var userId = int.Parse(reader.GetString(5));
-            var filmId = int.Parse(reader.GetString(6));
+            review.id = int.Parse(reader.GetString(0));
+            review.header = reader.GetString(1);
+            review.overview = reader.GetString(2);
+            review.rating = int.Parse(reader.GetString(3));
+            review.lastEdited = DateTime.Parse(reader.GetString(4));
+            review.userId = int.Parse(reader.GetString(5));
+            review.filmId = int.Parse(reader.GetString(6));
             return review;
         }
     }

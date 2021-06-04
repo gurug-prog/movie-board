@@ -77,40 +77,12 @@ namespace MyConsoleProject
             searchInput.TextChanged += OnSearchChanging;
             this.Add(searchInput);
 
-            // var radioWidth = 10;
             var radioGroup = new RadioGroup(new NStack.ustring[]{ "film", "user", "review", "actor" })
             {
                 X = Pos.AnchorEnd() - Pos.Percent(20),
                 Y = Pos.AnchorEnd() - Pos.Percent(20),
             };
             this.Add(radioGroup);
-            // var chooseUserButton = new Button("user")
-            // {
-            //     X = Pos.AnchorEnd() - Pos.Percent(20),
-            //     Y = Pos.AnchorEnd() - Pos.Percent(70),
-            // };
-            // this.Add(chooseUserButton);
-
-            // var chooseButton = new Button("films")
-            // {
-            //     X = Pos.AnchorEnd() - Pos.Percent(20),
-            //     Y = Pos.AnchorEnd() - Pos.Percent(70),
-            // };
-            // this.Add(chooseUserButton);
-
-            // var chooseUserButton = new Button("reviews")
-            // {
-            //     X = Pos.AnchorEnd() - Pos.Percent(20),
-            //     Y = Pos.AnchorEnd() - Pos.Percent(70),
-            // };
-            // this.Add(chooseUserButton);
-
-            // var chooseUserButton = new Button("actors")
-            // {
-            //     X = Pos.AnchorEnd() - Pos.Percent(20),
-            //     Y = Pos.AnchorEnd() - Pos.Percent(70),
-            // };
-            // this.Add(chooseUserButton);
         }
 
         private void OnSearchChanging(ustring args)
