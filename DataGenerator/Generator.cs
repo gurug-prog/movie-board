@@ -178,7 +178,7 @@ namespace MyConsoleProject
         {
             var films = new List<Film>();
             var rand = new Random();
-            var filmsFilePath = "../../data/generator/films.csv";
+            var filmsFilePath = "../data/generator/films.csv";
             var filmsLines = File.ReadAllLines(filmsFilePath);
 
             for (int i = 0; i < filmsQuantity; i++)
@@ -201,7 +201,7 @@ namespace MyConsoleProject
         {
             var actors = new List<Actor>();
             var rand = new Random();
-            var actorsFilePath = "../../data/generator/actors.csv";
+            var actorsFilePath = "../data/generator/actors.csv";
             var actorsLines = File.ReadAllLines(actorsFilePath);
             var rolePlans = new string[] { "leading", "supporting", "extra" };
 
@@ -229,8 +229,8 @@ namespace MyConsoleProject
             var maxUsers = userRepo.GetMaxId();
             var maxFilms = filmRepo.GetMaxId();
 
-            var headersFilePath = "../../data/generator/review_headers.txt";
-            var overviewsFilePath = "../../data/generator/review_overviews.txt";
+            var headersFilePath = "../data/generator/review_headers.txt";
+            var overviewsFilePath = "../data/generator/review_overviews.txt";
             var headers = File.ReadAllLines(headersFilePath);
             var overviews = File.ReadAllLines(overviewsFilePath);
 
